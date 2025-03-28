@@ -1,0 +1,373 @@
+type Query {
+    # Auth queries
+    me: User @auth
+
+    # Récupération d'un établissement par ID
+    etablissement(id: ID! @eq): Etablissement @find
+
+    # Récupération d'un établissement par slug
+    etablissementBySlug(slug: String! @eq): Etablissement @find
+
+    # Liste des établissements
+    etablissements: [Etablissement!]! @all
+
+    # Récupération d'un enfant par ID
+    enfant(id: ID! @eq): Enfant @find
+
+    # Récupération d'un enfant par slug
+    enfantBySlug(slug: String! @eq): Enfant @find
+
+    # Liste des enfants
+    enfants: [Enfant!]! @all
+
+    # Récupération d'un tuteur (parent) par ID
+    tuteur(id: ID! @eq): Tuteur @find
+
+    # Récupération d'un tuteur par slug
+    tuteurBySlug(slug: String! @eq): Tuteur @find
+
+    # Liste des tuteurs
+    tuteurs: [Tuteur!]! @all
+
+    # Récupération d'un okeemien par ID
+    okeemien(id: ID! @eq): Okeemien @find
+
+    # Récupération d'un okeemien par slug
+    okeemienBySlug(slug: String! @eq): Okeemien @find
+
+    # Liste des okeemiens
+    okeemiens: [Okeemien!]! @all
+
+    # Récupération d'une facture par ID
+    facture(id: ID! @eq): Facture @find
+
+    # Liste des factures
+    factures: [Facture!]! @all
+
+    # Récupération d'une présence par ID
+    presence(id: ID! @eq): Presence @find
+
+    # Liste des présences
+    presences: [Presence!]! @all
+
+    # Récupération d'une transmission par ID
+    transmission(id: ID! @eq): Transmission @find
+
+    # Liste des transmissions
+    transmissions: [Transmission!]! @all
+}
+
+type Mutation {
+    # Auth mutations
+    # login(email: String!, password: String!): AuthPayload!
+    # register(name: String!, email: String!, password: String!): AuthPayload!
+    # logout: LogoutResponse!
+
+    # Mutations pour Etablissement
+    createEtablissement(input: CreateEtablissementInput!): Etablissement!
+        @create
+    updateEtablissement(
+        id: ID!
+        input: UpdateEtablissementInput!
+    ): Etablissement! @update
+    deleteEtablissement(id: ID!): Etablissement! @delete
+
+    # Mutations pour Enfant
+    createEnfant(input: CreateEnfantInput!): Enfant! @create
+    updateEnfant(id: ID!, input: UpdateEnfantInput!): Enfant! @update
+    deleteEnfant(id: ID!): Enfant! @delete
+
+    # Mutations pour Tuteur
+    createTuteur(input: CreateTuteurInput!): Tuteur! @create
+    updateTuteur(id: ID!, input: UpdateTuteurInput!): Tuteur! @update
+    deleteTuteur(id: ID!): Tuteur! @delete
+
+    # Mutations pour Okeemien
+    createOkeemien(input: CreateOkeemienInput!): Okeemien! @create
+    updateOkeemien(id: ID!, input: UpdateOkeemienInput!): Okeemien! @update
+    deleteOkeemien(id: ID!): Okeemien! @delete
+
+    # Mutations pour Facture
+    createFacture(input: CreateFactureInput!): Facture! @create
+    updateFacture(id: ID!, input: UpdateFactureInput!): Facture! @update
+    deleteFacture(id: ID!): Facture! @delete
+
+    # Mutations pour Presence
+    createPresence(input: CreatePresenceInput!): Presence! @create
+    updatePresence(id: ID!, input: UpdatePresenceInput!): Presence! @update
+    deletePresence(id: ID!): Presence! @delete
+
+    # Mutations pour Transmission
+    createTransmission(input: CreateTransmissionInput!): Transmission! @create
+    updateTransmission(id: ID!, input: UpdateTransmissionInput!): Transmission!
+        @update
+    deleteTransmission(id: ID!): Transmission! @delete
+}
+
+# Types
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    created_at: DateTime
+    updated_at: DateTime
+}
+
+type Etablissement {
+    id: ID!
+    nom: String!
+    type: String!
+    lieu: String!
+    slug: String!
+    nom_responsable: String!
+    nombre_okeemiens: Int!
+    avatar: String
+    created_at: DateTime
+    updated_at: DateTime
+
+    # Relations demandées
+    enfants: [Enfant!]! @hasMany
+    tuteurs: [Tuteur!]! @belongsToMany
+    okeemiens: [Okeemien!]! @hasMany
+    transmissions: [Transmission!]! @hasMany
+}
+
+type Enfant {
+    id: ID!
+    prenom: String!
+    nom: String!
+    slug: String!
+    date_naissance: Date!
+    avatar: String
+    etablissement_id: ID!
+    created_at: DateTime
+    updated_at: DateTime
+
+    # Relations demandées
+    etablissement: Etablissement! @belongsTo
+    tuteurs: [Tuteur!]! @belongsToMany
+    transmissions: [Transmission!]! @hasMany
+    presences: [Presence!]! @hasMany
+}
+
+type Tuteur {
+    id: ID!
+    prenom: String!
+    nom: String!
+    slug: String!
+    email: String!
+    telephone: String!
+    created_at: DateTime
+    updated_at: DateTime
+
+    # Relations demandées
+    enfants: [Enfant!]! @belongsToMany
+    factures: [Facture!]! @hasMany
+    transmissions: [Transmission!]! @hasManyThrough(through: "Enfant")
+}
+
+type Okeemien {
+    id: ID!
+    prenom: String!
+    nom: String!
+    slug: String!
+    email: String!
+    telephone: String!
+    etablissement_id: ID
+    created_at: DateTime
+    updated_at: DateTime
+
+    # Relations demandées
+    etablissement: Etablissement @belongsTo
+    transmissions: [Transmission!]! @hasMany
+    presences: [Presence!]! @belongsToMany
+}
+
+type Facture {
+    id: ID!
+    tuteur_id: ID!
+    montant: String!
+    statut: String!
+    pdf: String
+    created_at: DateTime
+    updated_at: DateTime
+
+    # Relations
+    tuteur: Tuteur! @belongsTo
+}
+
+type Presence {
+    id: ID!
+    enfant_id: ID!
+    date: Date!
+    heure_debut: String!
+    heure_fin: String!
+    created_at: DateTime
+    updated_at: DateTime
+
+    # Relations
+    enfant: Enfant! @belongsTo
+    okeemiens: [Okeemien!]! @belongsToMany
+}
+
+type Transmission {
+    id: ID!
+    okeemien_id: ID!
+    enfant_id: ID!
+    message: String!
+    fichier: String
+    jour: Date!
+        @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+    heure_debut: String!
+    heure_fin: String!
+    created_at: DateTime
+    updated_at: DateTime
+
+    # Relations
+    okeemien: Okeemien! @belongsTo
+    enfant: Enfant! @belongsTo
+    tuteurs: [Tuteur!]! @belongsToMany(through: "Enfant")
+    etablissement: Etablissement! @belongsTo
+}
+
+# Inputs
+
+input CreateEtablissementInput {
+    nom: String!
+    type: String!
+    lieu: String!
+    nom_responsable: String!
+    nombre_okeemiens: Int!
+    avatar: String
+}
+
+input UpdateEtablissementInput {
+    nom: String
+    type: String
+    lieu: String
+    nom_responsable: String
+    nombre_okeemiens: Int
+    avatar: String
+}
+
+input CreateEnfantInput {
+    prenom: String!
+    nom: String!
+    date_naissance: Date!
+    avatar: String
+    etablissement_id: ID!
+    tuteur_ids: [ID!]
+}
+
+input UpdateEnfantInput {
+    prenom: String
+    nom: String
+    date_naissance: Date
+    avatar: String
+    etablissement_id: ID
+    tuteur_ids: [ID!]
+}
+
+input CreateTuteurInput {
+    prenom: String!
+    nom: String!
+    email: String!
+    telephone: String!
+    enfant_ids: [ID!]
+}
+
+input UpdateTuteurInput {
+    prenom: String
+    nom: String
+    email: String
+    telephone: String
+    enfant_ids: [ID!]
+}
+
+input CreateOkeemienInput {
+    prenom: String!
+    nom: String!
+    email: String!
+    telephone: String!
+    etablissement_id: ID
+}
+
+input UpdateOkeemienInput {
+    prenom: String
+    nom: String
+    email: String
+    telephone: String
+    etablissement_id: ID
+}
+
+input CreateFactureInput {
+    tuteur_id: ID!
+    montant: String!
+    statut: String!
+    pdf: String
+}
+
+input UpdateFactureInput {
+    tuteur_id: ID
+    montant: String
+    statut: String
+    pdf: String
+}
+
+input CreatePresenceInput {
+    enfant_id: ID!
+    jour: Date!
+    heure_debut: String!
+    heure_fin: String!
+    okeemien_ids: [ID!]
+}
+
+input UpdatePresenceInput {
+    enfant_id: ID
+    jour: Date
+    heure_debut: String
+    heure_fin: String
+    okeemien_ids: [ID!]
+}
+
+input CreateTransmissionInput {
+    okeemien_id: ID!
+    enfant_id: ID!
+    message: String!
+    jour: Date!
+    heure_debut: String
+    heure_fin: String
+    fichier: String
+    etablissement_id: ID
+}
+
+input UpdateTransmissionInput {
+    okeemien_id: ID
+    enfant_id: ID
+    message: String
+    jour: Date!
+    heure_debut: String
+    heure_fin: String
+    fichier: String
+    etablissement_id: ID
+}
+
+# Auth types
+
+type AuthPayload {
+    access_token: String!
+    token_type: String!
+    user: User!
+}
+
+type LogoutResponse {
+    message: String!
+}
+
+# Scalars
+
+scalar DateTime
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")

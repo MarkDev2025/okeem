@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - 8000:80
+    volumes:
+      - ./okeem-admin:/var/www/html
+    working_dir: /var/www/html
+    command: >
+      bash -c "
+        touch database/database.sqlite &&
+        php artisan storage:link &&
+        php artisan migrate:refresh --seed &&
+        chown -R www-data:www-data storage bootstrap/cache database &&
+        chmod -R 775 storage bootstrap/cache database &&
+        apache2-foreground
+      "
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - 5173:5173
+    volumes:
+      - ./okeem-front:/app
+    working_dir: /app
+    command: bash -c "npm install && npm run dev -- --host"

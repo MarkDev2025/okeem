@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
+.git
+.gitignore
+*.md
+.env.example
+.phpunit.result.cache
+vendor
+storage/*.key
+database/*.sqlite

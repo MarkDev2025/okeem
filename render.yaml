@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: okeem-backend
+    env: docker
+    plan: free
+    dockerContext: .
+    dockerfilePath: Dockerfile.backend
+    buildFilter:
+      paths:
+        - okeem-admin/**/*
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+
+      - key: APP_KEY
+        generateValue: true # Laravel key auto-générée par Render (👍 utile avec artisan key:generate)
+
+      - key: DB_CONNECTION
+        value: sqlite
+
+      - key: DB_DATABASE
+        value: /var/www/html/database/database.sqlite
+
+      - key: LOG_CHANNEL
+        value: stderr # Pour que Laravel affiche les erreurs dans les logs Render
+
+      - key: CACHE_DRIVER
+        value: file
+
+      - key: SESSION_DRIVER
+        value: file
+
+      - key: QUEUE_CONNECTION
+        value: sync

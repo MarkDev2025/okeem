@@ -1,0 +1,100 @@
+type Enfant {
+    id: ID!
+    prenom: String!
+    nom: String!
+    date_naissance: String!
+    avatar: String
+    etablissement: Etablissement @belongsTo
+    created_at: String
+    updated_at: String
+}
+
+type Etablissement {
+    id: ID!
+    nom: String!
+    type: String!
+    lieu: String!
+    nom_responsable: String!
+    nombre_okeemiens: Int!
+    avatar: String
+    enfants: [Enfant!]! @hasMany
+    parents: [Tuteur!]! @hasMany
+    educateurs: [Okeemien!]! @hasMany
+    created_at: String
+    updated_at: String
+}
+
+type Tuteur {
+    id: ID!
+    prenom: String!
+    nom: String!
+    email: String!
+    telephone: String!
+    factures: [Facture!]! @hasMany
+    created_at: String
+    updated_at: String
+}
+
+type Facture {
+    id: ID!
+    tuteur: Tuteur! @belongsTo
+    montant: String!
+    statut: String!
+    pdf: String
+    created_at: String
+    updated_at: String
+}
+
+type Okeemien {
+    id: ID!
+    prenom: String!
+    nom: String!
+    email: String!
+    telephone: String!
+    created_at: String
+    updated_at: String
+}
+
+type Presence {
+    id: ID!
+    enfant: Enfant! @belongsTo
+    date: String!
+    heure_debut: String!
+    heure_fin: String!
+    created_at: String
+    updated_at: String
+}
+
+type Transmission {
+    id: ID!
+    okeemien: Okeemien! @belongsTo
+    enfant: Enfant! @belongsTo
+    message: String!
+    fichier: String
+    created_at: String
+    updated_at: String
+}
+
+# 📌 Définition des requêtes (API GraphQL)
+type Query {
+    etablissements: [Etablissement!]! @all
+    etablissement(id: ID!): Etablissement @find
+
+    enfants: [Enfant!]! @all
+    enfant(id: ID!): Enfant @find
+
+    tuteurs: [Tuteur!]! @all
+    tuteur(id: ID!): Tuteur @find
+
+    factures: [Facture!]! @all
+    facture(id: ID!): Facture @find
+
+    okeemiens: [Okeemien!]! @all
+    okeemien(id: ID!): Okeemien @find
+
+    presences: [Presence!]! @all
+    presence(id: ID!): Presence @find
+
+    transmissions: [Transmission!]! @all
+    transmission(id: ID!): Transmission @find
+}

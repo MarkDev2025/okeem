@@ -1,0 +1,60 @@
+# === BACKEND (okeem-admin) - Laravel ===
+/okeem-admin/vendor/
+/okeem-admin/node_modules/
+/okeem-admin/public/build
+/okeem-admin/storage/app/public/factures/*
+!/okeem-admin/storage/app/public/factures/.gitignore
+/okeem-admin/storage/framework/views/*
+!/okeem-admin/storage/framework/views/.gitignore
+/okeem-admin/public/storage
+/okeem-admin/storage/*.key
+/okeem-admin/storage/*
+/okeem-admin!/storage/.gitignore
+/okeem-admin!/storage/framework
+/okeem-admin/storage/framework/*
+/okeem-admin!/storage/framework/.gitignore
+/okeem-admin/.env
+/okeem-admin/.phpunit.result.cache
+/okeem-admin/Homestead.json
+/okeem-admin/Homestead.yaml
+/okeem-admin/database/*.sqlite
+
+# === FRONTEND (okeem-front) - Vue.js ===
+/okeem-front/node_modules/
+/okeem-front/dist/
+/okeem-front/dist-ssr/
+/okeem-front/coverage/
+/okeem-front/*.local
+/okeem-front/*.tsbuildinfo
+
+# Firebase
+/okeem-front/.firebase
+/okeem-front/.firebaserc
+
+# Cypress
+/okeem-front/cypress/videos/
+/okeem-front/cypress/screenshots/
+
+# === GLOBALS - IDEs, OS, logs ===
+*.log
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# IDEs
+.idea/
+.vscode/
+!.vscode/extensions.json
+
+# OS-specific
+.DS_Store
+
+# Misc
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

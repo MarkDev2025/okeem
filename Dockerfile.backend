@@ -1,0 +1,65 @@
+FROM php:8.2-apache
+
+# 1. Installer les dépendances système (PHP, Node, npm, etc.)
+RUN apt-get update && apt-get install -y \
+    git unzip curl libzip-dev libsqlite3-dev sqlite3 nodejs npm \
+    && docker-php-ext-install pdo pdo_sqlite
+
+# 2. Activer mod_rewrite pour Laravel
+RUN a2enmod rewrite
+
+# 3. Copier Composer depuis l’image officielle
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# 4. Définir le dossier de travail
+WORKDIR /var/www/html
+
+# 5. Copier le code Laravel dans le conteneur
+COPY ./okeem-admin /var/www/html
+
+# 6. Installer les dépendances PHP avec Composer
+# RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+
+# 7. Installer les dépendances JS et compiler avec Vite
+# RUN npm install && npm run build
+
+# 8. Configuration Apache : DocumentRoot vers public/
+RUN echo '<Directory /var/www/html/public>\n\
+    AllowOverride All\n\
+    </Directory>\n\
+    \n\
+    DocumentRoot /var/www/html/public' > /etc/apache2/sites-available/000-default.conf
+
+
+# 8. Démarrage de Laravel
+# CMD ["bash", "-c", "\
+#     set -e && set -x && \
+#     echo '✅ Starting setup...' && \
+#     mkdir -p database && \
+#     touch database/database.sqlite && \
+#     echo '📦 Running migrations...' && \
+#     if [ ! -f database/.migrated ]; then \
+#     php artisan migrate --seed --force && \
+#     touch database/.migrated; \
+#     fi && \
+#     echo '🔗 Linking storage...' && \
+#     set -x \
+#     && echo "📁 Vérification du lien public/storage..." \
+#     && ls -l public || echo "public n'existe pas encore" \
+#     && if [ -L public/storage ]; then \
+#     echo "🔗 Le lien public/storage existe, on le supprime..."; \
+#     rm public/storage; \
+#     else \
+#     echo "✅ Le lien public/storage n'existe pas, on continue..."; \
+#     fi \
+#     php artisan storage:link && \
+#     echo '🔐 Setting permissions...' && \
+#     chown -R www-data:www-data storage bootstrap/cache database && \
+#     chmod -R 775 storage bootstrap/cache database && \
+#     echo '🚀 Launching Apache...' && \
+#     apache2-foreground \
+#     "]
+
+COPY ./okeem-admin/entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
